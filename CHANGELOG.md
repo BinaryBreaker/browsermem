@@ -6,6 +6,8 @@ All notable changes are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-19
+
 ### Changed
 - **Up to ~100× faster lookups.** Memory is now streamed through reusable per-thread
   buffers on up to 8 threads instead of being copied wholesale, the title search uses SSE2,
@@ -38,5 +40,6 @@ First public release.
 - Forensics: `MemoryImage` (live capture, minidump, custom regions), `write_minidump()`.
 - Support for Chrome, Edge, Brave, Opera, Vivaldi and Yandex; experimental Firefox.
 
-[Unreleased]: https://github.com/BinaryBreaker/browsermem/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/BinaryBreaker/browsermem/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/BinaryBreaker/browsermem/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/BinaryBreaker/browsermem/releases/tag/v0.1.0
