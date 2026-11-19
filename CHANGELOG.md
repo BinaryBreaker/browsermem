@@ -6,6 +6,23 @@ All notable changes are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- **Up to ~100× faster lookups.** Memory is now streamed through reusable per-thread
+  buffers on up to 8 threads instead of being copied wholesale, the title search uses SSE2,
+  and only the pointers next to the title are checked instead of indexing every URL in
+  memory. A full scan dropped from ~350 ms to ~45 ms on a typical Chrome profile.
+- **Hot-region cache:** the regions that held a tab's objects are searched first on the
+  next lookup (1–4 ms), with automatic fallback to a full scan.
+- Offline `MemoryImage.resolve()` uses the same engine and no longer builds a full URL index.
+
+### Fixed
+- Favicon, image, script and style URLs stored next to the page URL could win over the page
+  itself (seen on GitHub). They are now down-weighted.
+
+### Added
+- `browsermem_bench` developer tool (`-DBROWSERMEM_BUILD_TOOLS=ON`) with a per-step timing
+  breakdown.
+
 ## [0.1.0] - 2026-11-19
 
 First public release.

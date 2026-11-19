@@ -101,8 +101,8 @@ TabMonitor(
 
 !!! tip "Single-page apps"
     Some sites change the URL without changing the page title. Set `rescan_ms=2000` to
-    catch those as `URL_CHANGED` events. Each rescan costs roughly 0.1–0.5 s of CPU, and
-    only the focused tab is rescanned.
+    catch those as `URL_CHANGED` events. A rescan usually takes a few milliseconds (it
+    searches the cached hot regions first), and only the focused tab is rescanned.
 
 ## Lifecycle
 

@@ -34,7 +34,8 @@ with special flags.
 - **Activity tracking:** `TabHistory` records visits and time spent per domain.
 - **Browsers:** Chrome, Edge, Brave, Opera and Vivaldi (any Chromium-based browser).
   Firefox is experimental.
-- **Fast:** event-driven (no polling loop in Python); about 0.1–0.5 s per lookup, with caching.
+- **Fast:** event-driven (no polling loop in Python). Switching to a tab it has seen
+  before takes 1–4 ms; a brand-new tab takes ~45 ms.
 - **Command line:** `browsermem active`, `browsermem watch --json` and more.
 - **Typed and dependency-free:** one wheel covers Python 3.9–3.14. Nothing to compile.
 - **Bonus: memory forensics.** Analyse minidumps of a browser offline.

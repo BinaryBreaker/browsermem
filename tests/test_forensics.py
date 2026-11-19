@@ -39,6 +39,26 @@ def test_resolve_accepts_window_caption(synthetic):
     assert tab.title == synthetic.title
 
 
+def test_page_url_beats_nearby_favicon():
+    """Browsers keep the favicon URL next to the page URL; the page must win."""
+    import struct
+
+    base = 0x30000000
+    mem = bytearray(0x1000)
+    title = "Favicon Regression Page Title"
+    page = "https://example.com/dashboard"
+    favicon = "https://cdn.example.com/static/favicon-dark.svg"
+    tb = title.encode("utf-16-le")
+    mem[0x100:0x100 + len(tb)] = tb
+    mem[0x300:0x300 + len(favicon)] = favicon.encode()
+    mem[0x400:0x400 + len(page)] = page.encode()
+    struct.pack_into("<Q", mem, 0x800, base + 0x100)   # title
+    struct.pack_into("<Q", mem, 0x808, base + 0x300)   # favicon: closest field
+    struct.pack_into("<Q", mem, 0x840, base + 0x400)   # page URL: further away
+    with MemoryImage.from_regions([(base, bytes(mem))]) as image:
+        assert image.resolve(title).url == page
+
+
 def test_unknown_title_is_unresolved(synthetic):
     with MemoryImage.from_regions(synthetic.regions) as image:
         tab = image.resolve("A title that is nowhere in memory")

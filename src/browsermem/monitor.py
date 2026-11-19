@@ -93,7 +93,7 @@ class TabMonitor:
             all_windows: Also report changes in background browser windows.
             debounce_ms: How long a window caption must be stable before it is reported.
             rescan_ms: Periodically rescan the focused tab to catch navigations
-                that keep the same title (0 = off; each rescan costs ~0.1-0.6 s CPU).
+                that keep the same title (0 = off; a rescan usually takes a few ms).
             cache_ttl_ms: Reuse a result while a window's caption is unchanged.
             emit_unresolved: Deliver events even when no URL could be resolved.
             queue_size: Capacity of the buffer behind :meth:`events`.

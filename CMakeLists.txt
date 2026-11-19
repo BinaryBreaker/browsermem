@@ -19,14 +19,23 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Link the C runtime statically so the DLL has no redistributable dependency.
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-add_library(browsermem SHARED
+option(BROWSERMEM_BUILD_TOOLS "Build developer tools (benchmark)" OFF)
+
+# Engine shared by the DLL and the developer tools.
+add_library(browsermem_core OBJECT
   native/src/browsers.cpp
-  native/src/c_api.cpp
   native/src/common.cpp
   native/src/memory.cpp
+  native/src/memory_source.cpp
   native/src/monitor.cpp
   native/src/resolver.cpp
-  native/src/url_index.cpp)
+  native/src/url_index.cpp
+  native/src/url_syntax.cpp)
+target_include_directories(browsermem_core PUBLIC native/src native/include)
+target_compile_definitions(browsermem_core PUBLIC UNICODE _UNICODE)
+target_compile_options(browsermem_core PUBLIC /W4 /WX /utf-8 /permissive- /EHsc)
+
+add_library(browsermem SHARED native/src/c_api.cpp $<TARGET_OBJECTS:browsermem_core>)
 target_include_directories(browsermem
   PUBLIC  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/native/include> $<INSTALL_INTERFACE:include>
   PRIVATE native/src)
@@ -34,6 +43,11 @@ target_compile_definitions(browsermem PRIVATE BM_BUILD_DLL BM_VERSION="${BM_VERS
                                               UNICODE _UNICODE)
 target_compile_options(browsermem PRIVATE /W4 /WX /utf-8 /permissive- /EHsc)
 target_link_libraries(browsermem PRIVATE user32)
+
+if(BROWSERMEM_BUILD_TOOLS)
+  add_executable(browsermem_bench native/tools/bench.cpp $<TARGET_OBJECTS:browsermem_core>)
+  target_link_libraries(browsermem_bench PRIVATE browsermem_core user32)
+endif()
 
 if(SKBUILD)
   # Python wheel: the DLL sits next to the package's Python files.

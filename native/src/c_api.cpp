@@ -16,6 +16,7 @@
 
 #include "browsers.hpp"
 #include "memory.hpp"
+#include "memory_source.hpp"
 #include "monitor.hpp"
 #include "resolver.hpp"
 #include "url_index.hpp"
@@ -340,10 +341,11 @@ int BM_CALL bm_image_resolve(bm_image* image, const char* title, int32_t browser
   window.caption = ToWide(title);
   const size_t inlineBytes = window.profile ? window.profile->inlineTitleBytes : 22;
 
-  const UrlIndex& urls = image->Index();
-  Resolution r = CorrelateTitle(image->snapshot, urls, TitleCandidates(window), inlineBytes);
-  r.bytesScanned = image->snapshot.totalBytes();
-  r.uniqueUrls = urls.size();
+  image->snapshot.Finalize();
+  SnapshotSource source(image->snapshot);
+  const std::vector<RegionInfo> regions = source.Regions();
+  Resolution r = CorrelateTitle(source, regions, TitleCandidates(window), inlineBytes, nullptr,
+                                &regions);
   r.elapsedMs = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
                                           std::chrono::steady_clock::now() - start)
                                           .count());
