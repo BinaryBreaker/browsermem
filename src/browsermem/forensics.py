@@ -15,6 +15,7 @@ title -- no running browser needed::
 
 from __future__ import annotations
 
+import contextlib
 import ctypes
 import mmap
 import os
@@ -43,7 +44,7 @@ class MemoryImage:
     # -- construction -----------------------------------------------------------
 
     @classmethod
-    def capture(cls, pid: int = 0) -> "MemoryImage":
+    def capture(cls, pid: int = 0) -> MemoryImage:
         """Copy the private read/write memory of a running process.
 
         ``pid=0`` picks the most recently active browser.
@@ -54,7 +55,7 @@ class MemoryImage:
         return image
 
     @classmethod
-    def from_regions(cls, regions: Iterable[Tuple[int, bytes]]) -> "MemoryImage":
+    def from_regions(cls, regions: Iterable[Tuple[int, bytes]]) -> MemoryImage:
         """Build an image from ``(base_address, data)`` pairs."""
         image = cls()
         for base, data in regions:
@@ -62,7 +63,7 @@ class MemoryImage:
         return image
 
     @classmethod
-    def from_minidump(cls, path: PathLike, *, private_only: bool = True) -> "MemoryImage":
+    def from_minidump(cls, path: PathLike, *, private_only: bool = True) -> MemoryImage:
         """Load a Windows minidump (.dmp), e.g. from Task Manager → *Create dump file*,
         ProcDump, or :func:`write_minidump`. Needs a full-memory dump.
 
@@ -119,17 +120,15 @@ class MemoryImage:
             lib.bm_image_free(self._handle)
             self._handle = c_void_p()
 
-    def __enter__(self) -> "MemoryImage":
+    def __enter__(self) -> MemoryImage:
         return self
 
     def __exit__(self, *exc: object) -> None:
         self.close()
 
     def __del__(self) -> None:
-        try:
+        with contextlib.suppress(Exception):
             self.close()
-        except Exception:
-            pass
 
     def __repr__(self) -> str:
         if not self._handle:
@@ -252,10 +251,8 @@ def write_minidump(pid: int, path: PathLike) -> None:
                     f"MiniDumpWriteDump failed, Win32 error {ctypes.get_last_error()}"
                 )
     except BaseException:
-        try:
+        with contextlib.suppress(OSError):
             os.remove(path)
-        except OSError:
-            pass
         raise
     finally:
         kernel32.CloseHandle(process)

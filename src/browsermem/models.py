@@ -24,7 +24,7 @@ class Browser(IntEnum):
     FIREFOX = 7  #: experimental
 
     @classmethod
-    def parse(cls, value: Union[str, int, "Browser"]) -> "Browser":
+    def parse(cls, value: Union[str, int, Browser]) -> Browser:
         """``Browser.parse("edge")`` -> ``Browser.EDGE``."""
         if isinstance(value, str):
             return cls[value.strip().upper()]

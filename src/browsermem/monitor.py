@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import queue
 import re
@@ -213,7 +214,7 @@ class TabMonitor:
     def running(self) -> bool:
         return bool(self._handle.value)
 
-    def start(self) -> "TabMonitor":
+    def start(self) -> TabMonitor:
         """Start monitoring (idempotent). The current tab is reported as a SNAPSHOT event."""
         with self._lock:
             if not self.running:
@@ -237,23 +238,21 @@ class TabMonitor:
         for loop, q in async_queues:
             loop.call_soon_threadsafe(q.put_nowait, _STOP)
 
-    def __enter__(self) -> "TabMonitor":
+    def __enter__(self) -> TabMonitor:
         return self.start()
 
     def __exit__(self, *exc: object) -> None:
         self.stop()
 
-    async def __aenter__(self) -> "TabMonitor":
+    async def __aenter__(self) -> TabMonitor:
         return self.start()
 
     async def __aexit__(self, *exc: object) -> None:
         await asyncio.get_running_loop().run_in_executor(None, self.stop)
 
     def __del__(self) -> None:
-        try:
+        with contextlib.suppress(Exception):
             self.stop()
-        except Exception:
-            pass
 
     # -- consumption ---------------------------------------------------------
 
@@ -308,10 +307,8 @@ class TabMonitor:
         try:
             self._queue.put_nowait(item)
         except queue.Full:  # drop the oldest event rather than block the native thread
-            try:
+            with contextlib.suppress(queue.Empty):
                 self._queue.get_nowait()
-            except queue.Empty:
-                pass
             self._queue.put_nowait(item)
 
     def _on_native(self, ptr, _user) -> None:  # runs on the native worker thread
@@ -329,10 +326,8 @@ class TabMonitor:
             handlers = [*self._handlers[None], *self._handlers[tab.event]]
             async_queues = list(self._async_queues)
         for loop, q in async_queues:
-            try:
+            with contextlib.suppress(RuntimeError):  # the event loop was closed
                 loop.call_soon_threadsafe(q.put_nowait, tab)
-            except RuntimeError:  # loop closed
-                pass
         for handler in handlers:
             try:
                 handler(tab)

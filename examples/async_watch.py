@@ -1,6 +1,7 @@
 """Consume tab events from asyncio."""
 
 import asyncio
+import contextlib
 
 import browsermem
 
@@ -11,7 +12,5 @@ async def main() -> None:
             print(tab.event.name, tab.title, tab.url)
 
 
-try:
+with contextlib.suppress(KeyboardInterrupt):
     asyncio.run(main())
-except KeyboardInterrupt:
-    pass
