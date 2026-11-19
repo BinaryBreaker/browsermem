@@ -1,0 +1,41 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Code or command to reproduce
+      render: python
+  - type: input
+    id: version
+    attributes:
+      label: browsermem version
+      description: "python -c \"import browsermem; print(browsermem.__version__)\""
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 142.0.7444.60
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Windows and Python version
+      placeholder: Windows 11 24H2, Python 3.12.7
+  - type: textarea
+    id: verbose
+    attributes:
+      label: Output of `browsermem active -v`
+      description: Remove any URLs you don't want to share.
+      render: text

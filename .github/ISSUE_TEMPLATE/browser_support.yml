@@ -1,0 +1,25 @@
+name: Browser support
+description: Report a browser that works, or doesn't, with browsermem
+labels: [browser-support]
+body:
+  - type: input
+    id: browser
+    attributes:
+      label: Browser, version and executable name
+      placeholder: Arc 1.70 (Arc.exe)
+    validations:
+      required: true
+  - type: textarea
+    id: windows
+    attributes:
+      label: Output of `browsermem windows`
+      render: text
+  - type: textarea
+    id: active
+    attributes:
+      label: Output of `browsermem active -v`
+      render: text
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes

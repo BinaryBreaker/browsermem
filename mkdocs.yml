@@ -1,0 +1,57 @@
+site_name: browsermem
+site_description: Real-time browser tab URLs and titles for Python on Windows
+site_url: https://binarybreaker.github.io/browsermem/
+repo_url: https://github.com/BinaryBreaker/browsermem
+repo_name: BinaryBreaker/browsermem
+edit_uri: edit/main/docs/
+copyright: MIT © BinaryBreaker
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle: { icon: material/weather-night, name: Dark mode }
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle: { icon: material/weather-sunny, name: Light mode }
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Guides:
+      - Live events: events.md
+      - Activity tracking: activity.md
+      - Command line: cli.md
+      - Memory forensics: forensics.md
+  - API reference: api.md
+  - How it works: how-it-works.md
+  - Changelog: changelog.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: false
+            show_root_heading: true
+            members_order: source
+            docstring_style: google
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc: { permalink: true }
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.snippets: { check_paths: true }
+  - pymdownx.tabbed: { alternate_style: true }

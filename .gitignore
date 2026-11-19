@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Build outputs
+build/
+dist/
+site/
+_skbuild/
+src/browsermem/*.dll
+*.obj
+*.lib
+*.exp
+*.pdb
+
+# Memory dumps can contain sensitive data
+*.dmp
+
+# IDEs
+.idea/
+.vscode/
